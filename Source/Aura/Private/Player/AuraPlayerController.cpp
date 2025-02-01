@@ -4,6 +4,8 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "SWarningOrErrorBox.h"
+#include "Logging/StructuredLog.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -75,6 +77,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	// player where the pitch and roll are zeroed out
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
 
 	// get pawn and move them based on the Input Actions
 	if (APawn* ControlledPawn = GetPawn<APawn>())
