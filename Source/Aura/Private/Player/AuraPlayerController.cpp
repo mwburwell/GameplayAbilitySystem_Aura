@@ -3,6 +3,7 @@
 
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -42,4 +43,43 @@ void AAuraPlayerController::BeginPlay()
 	SetInputMode(InputModeData);
 	
 	
+}
+
+// used to be in the AuraCharacterBase
+void AAuraPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	// The Player Controller base class comes with an InputComponent, but we created an
+	// EnhancedInputComponent in BeginPlay(). Player Controller's Input Componenent needs
+	// to be cast to EnhancedInputComponent and Crash the game if we can't
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+	// binds our MoveAction to the Move Function through the EnhancedInputComponent
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+}
+
+void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
+{
+	// InputActionValue is the argument recieved from the MoveAction
+	// we need the input action in a value of Vector2D for WASD
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+
+	// To decide what is forward we need to figure out what forward is
+	// GetConrolRotation() gives the full aim rotation, which in our case
+	// is the direction from the camera to the character
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.0f);
+
+	// normalized directions based on the rotation of the camera facing the
+	// player where the pitch and roll are zeroed out
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	// get pawn and move them based on the Input Actions
+	if (APawn* ControlledPawn = GetPawn<APawn>())
+	{
+		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
 }
