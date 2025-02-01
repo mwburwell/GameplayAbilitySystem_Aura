@@ -5,12 +5,61 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "SWarningOrErrorBox.h"
+#include "Interaction/EnemyInterface.h"
 #include "Logging/StructuredLog.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
 }
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+}
+
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	// trace complex is for more complex collision tracing.
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
+
+	LastActor = ThisActor;
+	ThisActor = CursorHit.GetActor();
+
+	/***
+	 * 1. Last Actor nothing, This Actor Nothing
+	 *		- do nothing
+	 * 2. Last Actor Nothing, this Actor Something
+	 *		- Highlight This Actor
+	 * 3. Last Actor Something, This Actor Same Thing
+	 *		- Do Nothing
+	 * 4. Last Actor Something, This Actor Something else
+	 *		- UnHighlight Last Actor
+	 *		- Highlight This Actor
+	 * 5. Last Actor Something, This Actor Nothing
+	 *		- Unhighlight Last Actor
+	 */
+	
+	if (!LastActor && ThisActor)
+		ThisActor->HighlightActor();
+	if (LastActor && !ThisActor)
+		LastActor->UnHighlightActor();
+	
+	if (LastActor && ThisActor)
+	{
+		if (LastActor != ThisActor)
+		{
+			LastActor->UnHighlightActor();
+			ThisActor->HighlightActor();
+		}
+	}
+}
+
 
 void AAuraPlayerController::BeginPlay()
 {
