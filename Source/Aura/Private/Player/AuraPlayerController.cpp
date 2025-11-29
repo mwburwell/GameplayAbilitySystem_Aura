@@ -21,9 +21,10 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 void AAuraPlayerController::CursorTrace()
 {
 	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return ;
 
-	LastActor = ThisActor;
+	LastActor = ThisActor; 
 	ThisActor = CursorHit.GetActor();
 
 	/**
@@ -61,7 +62,7 @@ void AAuraPlayerController::CursorTrace()
 		}
 		else
 		{
-			if (ThisActor == LastActor)
+			if (ThisActor != LastActor)
 			{
 				// Case D
 				LastActor->UnHighlightActor();
