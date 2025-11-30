@@ -7,6 +7,9 @@
 #include "GameFramework/PlayerState.h"
 #include "AuraPlayerState.generated.h"
 
+class UAbilitySystemComponent;
+class UAttributeSet;
+
 /**
  * 
  */
