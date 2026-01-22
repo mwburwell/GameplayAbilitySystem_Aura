@@ -6,6 +6,14 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 
+void UAuraAbilitySystemComponent::AbilityActorInfoSet()
+{
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::ClientEffectApplied);
+
+	// Code for accessing Native GameplayTags
+	//const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+}
+
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities)
 {
 	for (const TSubclassOf<UGameplayAbility>& Ability : Abilities)
@@ -55,14 +63,6 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 	}
 }
 
-void UAuraAbilitySystemComponent::AbilityActorInfoSet()
-{
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &ThisClass::EffectApplied);
-
-	// Code for accessing Native GameplayTags
-	//const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-}
-
 /**
  * EffectApplied function is bound to OnGameplayEffectAppliedDelegateToSelf
  *
@@ -74,7 +74,7 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
  *
  * whenever an effect is applied to self then this function is called
  */
-void UAuraAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
+void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
 	const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
 	FGameplayTagContainer TagContainer;
