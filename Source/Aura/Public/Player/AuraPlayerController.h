@@ -37,12 +37,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<UInputAction> ShiftAction;
+
 	/**
 	 * Move: 
 	 * @param InputActionValue 
 	 */
 	void Move(const FInputActionValue& InputActionValue);
 
+	void ShiftPressed();
+	void ShiftReleased();
+	bool bShiftEnabled = false;
 
 	/**
 	 * Input Configuration for Abilities
